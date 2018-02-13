@@ -1,0 +1,50 @@
+%% Trenton Smith
+% CFD Lab 
+%1.30.18
+clear
+clc
+%% 
+n = [10 50 100 500];
+h = .1;      %Meter
+dy = h./(n);   %Size of differential (Meter)
+mu = 10^(-3); %Pascal second
+
+U1 = velocity(n(1));
+U2 = velocity(n(2));
+U3 = velocity(n(3));
+U4 = velocity(n(4));
+
+plot(U1,0:dy(1):h,U2,0:dy(2):h,U3,0:dy(3):h,U4,0:dy(4):h)
+ylabel('Height (meters)')
+xlabel('Velocity Profile')
+legend('n=10','n=50','n=100','n=500','Location','best')
+title('Different # of Nodes')
+hold on
+figure(2)
+
+%% Find Velocity Profile 
+
+dpdx = 5*[.6 .2 0 -.4 -.8 -1.2];
+uv = ones(n(2)+1,6);
+hy = ones(n(2)+1,6);
+dy = h./(n+1);   %Size of differential (Meter)
+for x = 1:6
+    for y = 1:n(2)+1
+    if y == 1
+        hy(y,x) = 0;
+    else
+        hy(y,x) = dy(2)*y;
+    end
+    uv(y,x) = (hy(y,x)/h)*(1-(h^2/(2*mu*U2(n(2)+1)))*(dpdx(x))*(1-hy(y,x)/h));
+    end
+end
+
+uv(1) = 0;
+uv(n(2)+1)= 1;
+
+plot(uv,hy)
+grid on
+ylabel('Non dimensional distance (y/b)')
+xlabel('Non Dimensional Velocity (u/V)')
+legend({'P=-3','P=-1','P=0','P=2','P=4','P=6'},'Location','best')
+title('Velocity Profile')
