@@ -1,0 +1,42 @@
+function U = velocity(n)
+
+h = .1;      %Meter
+dy = h/(n+1);   %Size of differential (Meter)
+U = zeros(n+1,1);   %Define Velocity
+mu = 10^(-3);       %Viscosity
+
+%2nd Boundary Conditions 
+U(1) = 0;
+U(n+1) = 5;
+
+%3rd Define Pressure Gradient (negative)
+dpdx = -5;
+
+% Thomas Algorithm 
+%Forward Elimination  
+%Backward Substitution
+
+%Google CFD Thomas Algorithm
+
+% Preallocate Coefficients 
+a = ones(n,1);
+b = zeros(n,1);
+b(:,1) = -2; 
+c = ones(n,1);
+d = zeros(n,1);
+d(:,1) = (dy.^2)*(1/mu)*dpdx;
+
+for k = 3:n
+    
+    m = a(k)/(b(k-1));
+    
+    b(k) = b(k)-m*c(k-1);
+    d(k) = d(k)-m*d(k-1);
+end
+
+U(n) = d(n)./b(n);
+
+for k = n:-1:2
+    U(k) = (d(k)-c(k)*U(k+1))/b(k);
+end
+end
